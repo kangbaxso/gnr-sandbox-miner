@@ -32,12 +32,12 @@ glibc_ge() { [ "$(printf '%s\n2.33\n' "$1" | sort -V | head -1)" = "2.33" ]; }
 
 if glibc_ge "$GLIBC_VER" && [ ! -x genoryn-miner ]; then
   echo "[*] glibc >= 2.33 — download prebuilt release v1.2.0"
-  REL="genoryn-1.2.0-mainnet-lite-linux-x86_64.zip"
+  REL="genoryn-1.2.0-mainnet-linux-x86_64.zip"
   curl -sSL -o "$REL" "https://github.com/genoryn/genoryn/releases/download/v1.2.0/$REL"
   curl -sSL -o "$REL.sha256" "https://github.com/genoryn/genoryn/releases/download/v1.2.0/$REL.sha256"
   sha256sum -c "$REL.sha256"
   unzip -qo "$REL"
-  cp "genoryn-1.2.0-mainnet-lite-linux-x86_64/genoryn-miner" . && chmod +x genoryn-miner
+  cp "genoryn-1.2.0-mainnet-linux-x86_64/genoryn-miner" . && chmod +x genoryn-miner
 fi
 
 # ---------------- slow path: build from source -------------------------------
