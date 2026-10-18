@@ -27,6 +27,13 @@ mkdir -p "$WORKDIR" && cd "$WORKDIR"
 
 SUDO=""; [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1 && SUDO="sudo"
 
+# unzip dibutuhkan fast path; python3 jadi fallback kalau unzip gak ada
+command -v unzip >/dev/null 2>&1 || { command -v apt-get >/dev/null 2>&1 && $SUDO apt-get install -y -qq unzip; } || true
+extract_zip() {
+  if command -v unzip >/dev/null 2>&1; then unzip -qo "$1"
+  else python3 -c "import zipfile,sys; zipfile.ZipFile(sys.argv[1]).extractall()" "$1"; fi
+}
+
 # ---------------- fast path: prebuilt binary (glibc >= 2.33) -----------------
 glibc_ge() { [ "$(printf '%s\n2.33\n' "$1" | sort -V | head -1)" = "2.33" ]; }
 
@@ -36,7 +43,7 @@ if glibc_ge "$GLIBC_VER" && [ ! -x genoryn-miner ]; then
   curl -sSL -o "$REL" "https://github.com/genoryn/genoryn/releases/download/v1.2.0/$REL"
   curl -sSL -o "$REL.sha256" "https://github.com/genoryn/genoryn/releases/download/v1.2.0/$REL.sha256"
   sha256sum -c "$REL.sha256"
-  unzip -qo "$REL"
+  extract_zip "$REL"
   cp "genoryn-1.2.0-mainnet-linux-x86_64/genoryn-miner" . && chmod +x genoryn-miner
 fi
 
